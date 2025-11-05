@@ -27,64 +27,69 @@ public class StudentDaoImpl implements StudentDao {
     @Transactional
     public Student createNewStudent(Student student) {
         //YOUR CODE STARTS HERE
+        final String insertSql = "INSERT INTO student (fName, lName) VALUES (?, ?)";
+        jdbcTemplate.update(insertSql,
+                student.getStudentFirstName(),
+                student.getStudentLastName());
 
-
-        return null;
-
-
+        Integer id = jdbcTemplate.queryForObject("SELECT sid FROM student ORDER BY sid DESC LIMIT 1", Integer.class);
+        if (id != null) {
+            student.setStudentId(id);
+        }
+        return student;
         //YOUR CODE ENDS HERE
     }
 
     @Override
     public List<Student> getAllStudents() {
         //YOUR CODE STARTS HERE
-
-
-        return null;
-
+        final String sql = "SELECT sid, fName, lName FROM student ORDER BY sid";
+        return jdbcTemplate.query(sql, new StudentMapper());
         //YOUR CODE ENDS HERE
     }
 
     @Override
     public Student findStudentById(int id) {
         //YOUR CODE STARTS HERE
-
-        return null;
-
+        final String sql = "SELECT sid, fName, lName FROM student WHERE sid = ?";
+        return jdbcTemplate.queryForObject(sql, new StudentMapper(), id);
         //YOUR CODE ENDS HERE
     }
 
     @Override
     public void updateStudent(Student student) {
         //YOUR CODE STARTS HERE
-
-
+        final String sql = "UPDATE student SET fName = ?, lName = ? WHERE sid = ?";
+        jdbcTemplate.update(sql,
+                student.getStudentFirstName(),
+                student.getStudentLastName(),
+                student.getStudentId());
         //YOUR CODE ENDS HERE
     }
 
     @Override
     public void deleteStudent(int id) {
         //YOUR CODE STARTS HERE
-
-
+        // Remove enrollments first
+        jdbcTemplate.update("DELETE FROM course_student WHERE student_id = ?", id);
+        // Then delete the student
+        jdbcTemplate.update("DELETE FROM student WHERE sid = ?", id);
         //YOUR CODE ENDS HERE
     }
 
     @Override
     public void addStudentToCourse(int studentId, int courseId) {
         //YOUR CODE STARTS HERE
-
-
-
+        final String sql = "INSERT INTO course_student (student_id, course_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, studentId, courseId);
         //YOUR CODE ENDS HERE
     }
 
     @Override
     public void deleteStudentFromCourse(int studentId, int courseId) {
         //YOUR CODE STARTS HERE
-
-
-
+        final String sql = "DELETE FROM course_student WHERE student_id = ? AND course_id = ?";
+        jdbcTemplate.update(sql, studentId, courseId);
         //YOUR CODE ENDS HERE
     }
 }
