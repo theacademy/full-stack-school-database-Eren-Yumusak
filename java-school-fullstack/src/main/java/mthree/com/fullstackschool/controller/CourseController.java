@@ -18,7 +18,6 @@ public class CourseController {
     public List<Course> getAllCourses() {
         //YOUR CODE STARTS HERE
         return courseService.getAllCourses();
-        
         //YOUR CODE ENDS HERE
     }
 
